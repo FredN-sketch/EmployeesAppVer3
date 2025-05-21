@@ -3,67 +3,66 @@ using EmployeesApp.Web.Services;
 using EmployeesApp.Web.Views.Employees;
 using Microsoft.AspNetCore.Mvc;
 
-namespace EmployeesApp.Web.Controllers
+namespace EmployeesApp.Web.Controllers;
+
+public class EmployeesController(IEmployeeService service) : Controller
 {
-    public class EmployeesController(EmployeeService service) : Controller
+    //static readonly EmployeeService service = new();
+
+    [HttpGet("")]
+    public IActionResult Index()
     {
-        //static readonly EmployeeService service = new();
+        var model = service.GetAll();
 
-        [HttpGet("")]
-        public IActionResult Index()
+        var viewModel = new IndexVM()
         {
-            var model = service.GetAll();
-
-            var viewModel = new IndexVM()
+            EmployeeVMs = model
+            .Select(e => new IndexVM.EmployeeVM()
             {
-                EmployeeVMs = model
-                .Select(e => new IndexVM.EmployeeVM()
-                {
-                    Id = e.Id,
-                    Name = e.Name,
-                    ShowAsHighlighted = service.CheckIsVIP(e),
-                })
-                .ToArray()
-            };
+                Id = e.Id,
+                Name = e.Name,
+                ShowAsHighlighted = service.CheckIsVIP(e),
+            })
+            .ToArray()
+        };
 
-            return View(viewModel);
-        }
+        return View(viewModel);
+    }
 
-        [HttpGet("create")]
-        public IActionResult Create()
-        {
+    [HttpGet("create")]
+    public IActionResult Create()
+    {
+        return View();
+    }
+
+    [HttpPost("create")]
+    public IActionResult Create(CreateVM viewModel)
+    {
+        if (!ModelState.IsValid)
             return View();
-        }
 
-        [HttpPost("create")]
-        public IActionResult Create(CreateVM viewModel)
+        Employee employee = new()
         {
-            if (!ModelState.IsValid)
-                return View();
+            Name = viewModel.Name,
+            Email = viewModel.Email,
+        };
 
-            Employee employee = new()
-            {
-                Name = viewModel.Name,
-                Email = viewModel.Email,
-            };
+        service.Add(employee);
+        return RedirectToAction(nameof(Index));
+    }
 
-            service.Add(employee);
-            return RedirectToAction(nameof(Index));
-        }
+    [HttpGet("details/{id}")]
+    public IActionResult Details(int id)
+    {
+        var model = service.GetById(id);
 
-        [HttpGet("details/{id}")]
-        public IActionResult Details(int id)
+        DetailsVM viewModel = new()
         {
-            var model = service.GetById(id);
+            Id = model.Id,
+            Name = model.Name,
+            Email = model.Email,
+        };
 
-            DetailsVM viewModel = new()
-            {
-                Id = model.Id,
-                Name = model.Name,
-                Email = model.Email,
-            };
-
-            return View(viewModel);
-        }
+        return View(viewModel);
     }
 }

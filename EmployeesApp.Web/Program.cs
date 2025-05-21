@@ -1,19 +1,18 @@
 using EmployeesApp.Web.Services;
 
-namespace EmployeesApp.Web
+namespace EmployeesApp.Web;
+
+//test
+public class Program
 {
-    //test
-    public class Program
+    public static void Main(string[] args)
     {
-        public static void Main(string[] args)
-        {
-            var builder = WebApplication.CreateBuilder(args);
-            builder.Services.AddControllersWithViews();
-            builder.Services.AddSingleton<EmployeeService>();
-            var app = builder.Build();
-            app.UseStaticFiles();
-            app.MapControllers();
-            app.Run();
-        }
+        var builder = WebApplication.CreateBuilder(args);
+        builder.Services.AddControllersWithViews();
+        builder.Services.AddSingleton<IEmployeeService, EmployeeService>();
+        var app = builder.Build();
+        app.UseStaticFiles();
+        app.MapControllers();
+        app.Run();
     }
 }
