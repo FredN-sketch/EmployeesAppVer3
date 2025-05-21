@@ -5,9 +5,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace EmployeesApp.Web.Controllers
 {
-    public class EmployeesController : Controller
+    public class EmployeesController(EmployeeService service) : Controller
     {
-        static readonly EmployeeService service = new();
+        //static readonly EmployeeService service = new();
 
         [HttpGet("")]
         public IActionResult Index()
