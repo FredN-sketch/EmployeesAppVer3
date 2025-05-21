@@ -1,3 +1,4 @@
+using EmployeesApp.Web.Attributes;
 using EmployeesApp.Web.Services;
 
 namespace EmployeesApp.Web;
@@ -10,6 +11,7 @@ public class Program
         var builder = WebApplication.CreateBuilder(args);
         builder.Services.AddControllersWithViews();
         builder.Services.AddSingleton<IEmployeeService, OtherEmployeeService>();
+        builder.Services.AddScoped<MyLogFilterAttribute>();
         var app = builder.Build();
         app.UseStaticFiles();
         app.MapControllers();

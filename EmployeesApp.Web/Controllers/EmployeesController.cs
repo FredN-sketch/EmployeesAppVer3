@@ -1,14 +1,15 @@
-﻿using EmployeesApp.Web.Models;
+﻿using EmployeesApp.Web.Attributes;
+using EmployeesApp.Web.Models;
 using EmployeesApp.Web.Services;
 using EmployeesApp.Web.Views.Employees;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EmployeesApp.Web.Controllers;
 
-public class EmployeesController(IEmployeeService service) : Controller
+public class EmployeesController(IEmployeeService service, ILogger<EmployeesController> logger) : Controller
 {
     //static readonly EmployeeService service = new();
-
+    //[ServiceFilter(typeof(EmployeeService))]
     [HttpGet("")]
     public IActionResult Index()
     {
@@ -25,7 +26,7 @@ public class EmployeesController(IEmployeeService service) : Controller
             })
             .ToArray()
         };
-
+        logger.LogInformation("Index action called");
         return View(viewModel);
     }
 
@@ -35,6 +36,7 @@ public class EmployeesController(IEmployeeService service) : Controller
         return View();
     }
 
+    [ServiceFilter(typeof(MyLogFilterAttribute))]
     [HttpPost("create")]
     public IActionResult Create(CreateVM viewModel)
     {
@@ -48,6 +50,7 @@ public class EmployeesController(IEmployeeService service) : Controller
         };
 
         service.Add(employee);
+
         return RedirectToAction(nameof(Index));
     }
 
